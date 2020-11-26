@@ -7,10 +7,14 @@ Mario Perdomo
 18029
 
 intersect.py
-Proposito: Intersection between models
+Proposito: Intersections between points and objects
 """
+
 class Intersect(object):
-	def __init__(self, distance, point, normal):
-		self.distance = distance
-		self.point = point
-		self.normal = normal
+    def __init__(self, distance, point, normal, texCoords, sceneObject):
+        self.distance = distance
+        self.point = point
+        self.normal = normal
+        self.texCoords = texCoords
+        self.sceneObject = sceneObject
+

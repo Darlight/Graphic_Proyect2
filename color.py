@@ -41,3 +41,7 @@ class color(object):
     return (self.r==other.r and self.g==other.g and self.b==other.b)
     
   __rmul__ = __mul__ 
+
+BLACK = color(0,0,0)
+WHITE = color(255,255,255)
+BLUE = color(0,255,255)

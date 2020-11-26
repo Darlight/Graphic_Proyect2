@@ -17,7 +17,7 @@ from collections import namedtuple
 #Named tuples and math functions from Dennis' Github  and
 V2 = namedtuple('Vertex2', ['x', 'y'])
 V3 = namedtuple('Vertex3', ['x', 'y', 'z'])
-
+V4 = namedtuple('Vertex4', ['x', 'y', 'z','w'])
 def sum(v0, v1):
     """
         Input: 2 size 3 vectors
@@ -96,7 +96,52 @@ def reflect(I, N):
   n = mul(N, 2 * dot(Lm, N))
   return norm(sub(Lm, n))
 
-  
+
+def refract(N, I, refractive_index):  # Implementation of Snell's law
+    cosi = -max(-1, min(1, dot(I, N)))
+    etai = 1
+    etat = refractive_index
+
+    if cosi < 0:  # if the ray is inside the object, swap the indices and invert the normal to get the correct result
+      cosi = -cosi
+      etai, etat = etat, etai
+      N = mul(N, -1)
+
+    eta = etai/etat
+    k = 1 - eta**2 * (1 - cosi**2)
+    if k < 0:
+      return V3(1, 0, 0)
+
+    return norm(sum(
+      mul(I, eta),
+      mul(N, (eta * cosi - k**(1/2)))
+    ))
+
+def fresnel(N, I, refractive_index):
+    # N = normal
+    # I = incident vector
+    # ior = index of refraction
+    cosi = max(-1, min(1, dot(I, N)))
+    etai = 1
+    etat = refractive_index
+
+    if cosi > 0:
+        etai, etat = etat, etai
+
+    sint = etai / etat * (max(0, 1 - cosi * cosi) ** 0.5)
+
+    if sint >= 1: # Total Internal Reflection
+        return 1
+
+    cost = max(0, 1 - sint * sint) ** 0.5
+    cosi = abs(cosi)
+    Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost))
+    Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost))
+    return (Rs * Rs + Rp * Rp) / 2
+
+
+
+
 def barycentric(A, B, C, P):
     cx, cy, cz = cross(
         V3(B.x - A.x, C.x - A.x, A.x - P.x), V3(B.y - A.y, C.y - A.y, A.y - P.y),
